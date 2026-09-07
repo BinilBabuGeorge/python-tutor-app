@@ -5,6 +5,8 @@ import { onAuthStateChanged, signOut } from 'firebase/auth'
 import Auth from './Auth'
 import { Code2, BookOpen, Trophy, Award, Flame, Zap, Menu, ChevronRight, CircleUserRound, Crown, Terminal, Send, RotateCcw, Sparkles, Target, Check, LockKeyhole, Clock3, ShieldCheck, Lightbulb, Users, Star, LogOut } from 'lucide-react'
 
+const API_URL = 'https://python-tutor-backend-xj9m.onrender.com'
+
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
@@ -50,7 +52,7 @@ function App() {
     setIsHintVisible(false)
     setLoading(true)
     try {
-      const res = await fetch(`http://127.0.0.1:5000/get-question?level=${selectedLevel}`)
+      const res = await fetch(`${API_URL}/get-question?level=${selectedLevel}`)
       const text = await res.text()
       setQuestion(text)
     } catch (err) {
@@ -67,7 +69,7 @@ function App() {
     setIsHintVisible(false)
     setLoading(true)
     try {
-      const res = await fetch(`http://127.0.0.1:5000/get-question?level=${level}`)
+      const res = await fetch(`${API_URL}/get-question?level=${level}`)
       const text = await res.text()
       setQuestion(text)
     } catch (err) {
@@ -80,7 +82,7 @@ function App() {
     setChecking(true)
     setFeedback('')
     try {
-      const res = await fetch('http://127.0.0.1:5000/check-answer', {
+      const res = await fetch(`${API_URL}/check-answer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question, code: userCode })
