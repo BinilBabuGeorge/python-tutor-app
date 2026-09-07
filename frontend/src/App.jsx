@@ -1,9 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Code2, BookOpen, Trophy, Award, Flame, Zap, Menu, ChevronRight, CircleUserRound, Crown, Terminal, Send, RotateCcw, Sparkles, Target, Check, LockKeyhole, Clock3, ShieldCheck, Lightbulb, Users, Star } from 'lucide-react'
+import { auth } from './firebase'
+import { onAuthStateChanged, signOut } from 'firebase/auth'
+import Auth from './Auth'
+import { Code2, BookOpen, Trophy, Award, Flame, Zap, Menu, ChevronRight, CircleUserRound, Crown, Terminal, Send, RotateCcw, Sparkles, Target, Check, LockKeyhole, Clock3, ShieldCheck, Lightbulb, Users, Star, LogOut } from 'lucide-react'
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
+  const [authLoading, setAuthLoading] = useState(true)
   const [view, setView] = useState('overview')
   const [level, setLevel] = useState(null)
   const [xp, setXp] = useState(0)
@@ -15,6 +20,16 @@ function App() {
   const [checking, setChecking] = useState(false)
   const [isHintVisible, setIsHintVisible] = useState(false)
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user)
+      setAuthLoading(false)
+    })
+    return unsubscribe
+  }, [])
+
+  const handleLogout = () => signOut(auth)
 
   const playerLevel = Math.floor(xp / 50) + 1
 
@@ -140,6 +155,14 @@ function App() {
     </div>
   )
 
+  if (authLoading) {
+    return <div className="min-h-screen bg-slate-950 grid place-items-center text-slate-400">Loading...</div>
+  }
+
+  if (!currentUser) {
+    return <Auth />
+  }
+
   return (
     <div className="min-h-screen flex bg-slate-950 text-slate-100">
       {/* Sidebar */}
@@ -174,8 +197,22 @@ function App() {
           </div>
         </div>
 
-        <div className="mt-auto flex items-center gap-2 px-3 py-3 rounded-lg bg-slate-800 text-orange-400 text-sm">
-          <Flame size={16} fill="currentColor" /> <span className="text-slate-300">7 day streak</span>
+       <div className="mt-auto flex flex-col gap-2">
+          <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-slate-800/50 border border-slate-800">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-sky-400 to-cyan-300 grid place-items-center text-slate-900 font-bold text-sm shrink-0">
+              {(currentUser.displayName || currentUser.email)[0].toUpperCase()}
+            </div>
+            <div className="min-w-0">
+              <strong className="block text-sm truncate">{currentUser.displayName || 'Player'}</strong>
+              <span className="text-xs text-slate-500 truncate block">{currentUser.email}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-3 rounded-lg bg-slate-800 text-orange-400 text-sm">
+            <Flame size={16} fill="currentColor" /> <span className="text-slate-300">7 day streak</span>
+          </div>
+          <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-800 hover:text-red-400 transition text-xs">
+            <LogOut size={14} /> Log out
+          </button>
         </div>
       </aside>
 
