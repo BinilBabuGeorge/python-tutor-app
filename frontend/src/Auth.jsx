@@ -36,7 +36,7 @@ function Auth({ onLogin }) {
             <Code2 size={22} strokeWidth={2.8} />
           </div>
           <div>
-            <div className="font-extrabold text-xl">Py<span className="text-sky-400">Quest</span></div>
+            <div className="font-extrabold text-xl">Code<span className="text-sky-400">Climb</span></div>
             <div className="text-[10px] text-slate-500 tracking-wide uppercase">learn. play. master.</div>
           </div>
         </div>

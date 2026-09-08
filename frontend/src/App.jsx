@@ -174,7 +174,7 @@ function App() {
             <Code2 size={20} strokeWidth={2.8} />
           </div>
           <div>
-            <div className="font-extrabold text-lg">Py<span className="text-sky-400">Quest</span></div>
+            <div className="font-extrabold text-lg">Code<span className="text-sky-400">Climb</span></div>
             <div className="text-[10px] text-slate-500 tracking-wide uppercase">learn. play. master.</div>
           </div>
         </div>
@@ -238,7 +238,7 @@ function App() {
               <div className="flex items-center gap-2 text-sky-400 text-xs font-bold tracking-wide mb-2">
                 <Sparkles size={14} /> {today.toUpperCase()}
               </div>
-              <h1 className="text-3xl font-bold">Ready for your next <span className="text-sky-400">quest?</span></h1>
+              <h1 className="text-3xl font-bold">Ready for your next <span className="text-sky-400">climb?</span></h1>
               <p className="text-slate-400 mt-2 mb-6">Small steps today. Big skills tomorrow.</p>
 
               <div className="relative overflow-hidden bg-gradient-to-br from-sky-950 to-slate-900 border border-sky-900/50 rounded-2xl p-8 mb-8">
@@ -248,7 +248,7 @@ function App() {
                 <h2 className="text-2xl font-bold mb-2">Mastering <span className="text-sky-400">Python</span></h2>
                 <p className="text-slate-400 text-sm mb-5">Complete a challenge below to earn XP and level up.</p>
                 <button onClick={() => setView('practice')} className="flex items-center gap-2 bg-yellow-400 text-slate-900 font-bold px-5 py-3 rounded-xl hover:brightness-110 transition">
-                  Continue quest <ChevronRight size={17} />
+                  Continue climbing <ChevronRight size={17} />
                 </button>
                 <div className="mt-6">
                   <div className="flex justify-between text-xs text-slate-400 mb-1">
