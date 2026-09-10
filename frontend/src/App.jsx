@@ -98,6 +98,36 @@ function App() {
     }
     setChecking(false)
   }
+  const handleCodeKeyDown = (e) => {
+    const textarea = e.target
+    const { selectionStart, selectionEnd, value } = textarea
+
+    if (e.key === 'Tab') {
+      e.preventDefault()
+      const newValue = value.substring(0, selectionStart) + '    ' + value.substring(selectionEnd)
+      setUserCode(newValue)
+      requestAnimationFrame(() => {
+        textarea.selectionStart = textarea.selectionEnd = selectionStart + 4
+      })
+    }
+
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      const lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1
+      const currentLine = value.substring(lineStart, selectionStart)
+      const indentMatch = currentLine.match(/^\s*/)
+      let indent = indentMatch ? indentMatch[0] : ''
+      if (currentLine.trim().endsWith(':')) {
+        indent += '    '
+      }
+      const newValue = value.substring(0, selectionStart) + '\n' + indent + value.substring(selectionEnd)
+      setUserCode(newValue)
+      requestAnimationFrame(() => {
+        const newPos = selectionStart + 1 + indent.length
+        textarea.selectionStart = textarea.selectionEnd = newPos
+      })
+    }
+  }
 
   const goBack = () => {
     setView('overview')
@@ -414,6 +444,7 @@ function App() {
                           placeholder="Write your Python code here..."
                           value={userCode}
                           onChange={(e) => setUserCode(e.target.value)}
+                          onKeyDown={handleCodeKeyDown}
                         />
                       </div>
 
