@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { auth } from './firebase'
+import { auth, db } from './firebase'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import Auth from './Auth'
 import { Code2, BookOpen, Trophy, Award, Flame, Zap, Menu, ChevronRight, CircleUserRound, Crown, Terminal, Send, RotateCcw, Sparkles, Target, Check, LockKeyhole, Clock3, ShieldCheck, Lightbulb, Users, Star, LogOut } from 'lucide-react'
@@ -11,6 +12,7 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
+  const [progressLoaded, setProgressLoaded] = useState(false)
   const [view, setView] = useState('overview')
   const [level, setLevel] = useState(null)
   const [xp, setXp] = useState(0)
@@ -24,12 +26,26 @@ function App() {
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user)
+      if (user) {
+        setProgressLoaded(false)
+        const snap = await getDoc(doc(db, 'users', user.uid))
+        if (snap.exists()) {
+          setXp(snap.data().xp || 0)
+        }
+        setProgressLoaded(true)
+      }
       setAuthLoading(false)
     })
     return unsubscribe
   }, [])
+
+  useEffect(() => {
+    if (currentUser && progressLoaded) {
+      setDoc(doc(db, 'users', currentUser.uid), { xp }, { merge: true })
+    }
+  }, [xp, currentUser, progressLoaded])
 
   const handleLogout = () => signOut(auth)
 
