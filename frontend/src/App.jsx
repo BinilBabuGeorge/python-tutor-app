@@ -13,6 +13,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [progressLoaded, setProgressLoaded] = useState(false)
+  const [levelProgress, setLevelProgress] = useState({ easy: 1, medium: 1, hard: 1 })
   const [view, setView] = useState('overview')
   const [level, setLevel] = useState(null)
   const [xp, setXp] = useState(0)
@@ -32,7 +33,11 @@ function App() {
         setProgressLoaded(false)
         const snap = await getDoc(doc(db, 'users', user.uid))
         if (snap.exists()) {
-          setXp(snap.data().xp || 0)
+          const data = snap.data()
+          setXp(data.xp || 0)
+          if (data.progress) {
+            setLevelProgress(prev => ({ ...prev, ...data.progress }))
+          }
         }
         setProgressLoaded(true)
       }
@@ -46,6 +51,12 @@ function App() {
       setDoc(doc(db, 'users', currentUser.uid), { xp }, { merge: true })
     }
   }, [xp, currentUser, progressLoaded])
+
+  useEffect(() => {
+    if (currentUser && progressLoaded) {
+      setDoc(doc(db, 'users', currentUser.uid), { progress: levelProgress }, { merge: true })
+    }
+  }, [levelProgress, currentUser, progressLoaded])
 
   const handleLogout = () => signOut(auth)
 
@@ -62,7 +73,7 @@ function App() {
   const startLevel = async (selectedLevel) => {
     setView('practice')
     setLevel(selectedLevel)
-    setQuestionNum(1)
+    setQuestionNum(levelProgress[selectedLevel] || 1)
     setFeedback('')
     setUserCode('')
     setIsHintVisible(false)
@@ -79,7 +90,9 @@ function App() {
 
   const nextQuestion = async () => {
     if (questionNum >= 10) return
-    setQuestionNum(prev => prev + 1)
+    const newNum = questionNum + 1
+    setQuestionNum(newNum)
+    setLevelProgress(prev => ({ ...prev, [level]: newNum }))
     setFeedback('')
     setUserCode('')
     setIsHintVisible(false)
